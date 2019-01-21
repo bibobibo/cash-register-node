@@ -1,9 +1,11 @@
 import CashRegister from '../src/CashRegister'
-import Printer from '../src/Printer'
 import Item from '../src/Item'
 import Purchase from '../src/Purchase'
-import MockPrinter from './MockPrinter'
 import StubPurchase from './StubPurchase'
+import Printer from '../src/Printer'
+import MockPrinter from './MockPrinter'
+import {stub, mock} from 'sinon'
+import assert from 'assert'
 
 describe('CashRegister', () => {
   it('should print the real purchase', () => {
@@ -21,6 +23,21 @@ describe('CashRegister', () => {
     // const purchase = new Purchase([itemOne, itemTwo])
 
     // cashRegister.process(purchase)
+  })
+
+  it('should process using sinon', () => {
+    const printer = new Printer()
+    const purchase = new Purchase([])
+    const mockedPurchase = mock(purchase)
+
+    stub(printer, 'print')
+    mockedPurchase.expects('asString').once().returns('mocked string')
+
+    const cashRegister = new CashRegister(printer)
+    cashRegister.process(purchase)
+
+    assert(printer.print.calledOnce)
+    mockedPurchase.verify()
   })
 
   it('should process the real purchase with mocked printer', () => {
